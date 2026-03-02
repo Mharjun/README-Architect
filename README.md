@@ -49,7 +49,13 @@ The goal: turn README writing from a boring chore into a fast, repeatable, and e
 ---
 ## VIDEO
 
+https://github.com/user-attachments/assets/16d45c17-d56d-4bb8-a5d0-8d6563242592
 
+https://github.com/user-attachments/assets/3edee07a-5f76-4298-b34f-87ebd0d11c1c
+
+https://github.com/user-attachments/assets/5a806a97-1848-4ec2-a100-e02820fc7fd4
+
+https://github.com/user-attachments/assets/0035de2b-9b83-41fe-a49f-3876340ebcbf
 
 ---
 ## Features
