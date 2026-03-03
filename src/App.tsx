@@ -39,6 +39,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { TEMPLATES, SNIPPETS, SNIPPET_GROUPS, CATEGORIES, Template, Snippet } from './data';
+import AIPanel, { AIConfig, DEFAULT_AI_CONFIG, scoreReadme } from './AIPanel';
+import { BrainCircuit } from 'lucide-react';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -70,6 +72,19 @@ export default function App() {
   const [snapMessage, setSnapMessage] = useState<string | null>(null);
   const [activeSnippetGroup, setActiveSnippetGroup] = useState<string>('all');
   const imageInputRef = useRef<HTMLInputElement>(null);
+
+  const [showAI, setShowAI] = useState(false);
+  const [aiConfig, setAiConfig] = useState<AIConfig>(() => {
+    const saved = localStorage.getItem('readme-ai-config');
+    return saved ? { ...DEFAULT_AI_CONFIG, ...JSON.parse(saved) } : DEFAULT_AI_CONFIG;
+  });
+  const [aiScore, setAiScore] = useState(0);
+
+  // حساب الـ score تلقائياً
+  useEffect(() => {
+    const s = scoreReadme(markdown);
+    setAiScore(s.total);
+  }, [markdown]);
 
   const filteredTemplates = useMemo(() => {
     return TEMPLATES.filter(t => {
@@ -109,6 +124,11 @@ export default function App() {
         editorRef.current.setSelectionRange(newCursorPos, newCursorPos);
       }
     }, 0);
+  };
+
+  const getSelectedText = () => {
+    if (!editorRef.current) return '';
+    return markdown.substring(editorRef.current.selectionStart, editorRef.current.selectionEnd);
   };
 
   const handleTemplateSelect = (template: Template) => {
@@ -205,36 +225,84 @@ export default function App() {
 
   const handleImport = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsImportOpen(false);
-    try {
-      let rawUrl = importUrl.trim();
+    const originalUrl = importUrl.trim();
+    if (!originalUrl) return;
 
-      // GitHub blob -> raw
+    setIsImportOpen(false);
+
+    try {
+      let rawUrl = originalUrl;
+
+      // Handle standard blob URLs
       if (rawUrl.includes('github.com') && rawUrl.includes('/blob/')) {
         rawUrl = rawUrl
           .replace('https://github.com', 'https://raw.githubusercontent.com')
           .replace('/blob/', '/');
+
+        const res = await fetch(rawUrl);
+        if (!res.ok) throw new Error(`Could not fetch README from ${rawUrl}`);
+        const text = await res.text();
+        setMarkdown(text);
+        setImportUrl('');
+        setSnapMessage(lang === 'en' ? 'README imported successfully!' : 'تم استيراد الملف بنجاح!');
+        setTimeout(() => setSnapMessage(null), 3000);
+        return;
       }
-      // GitHub short URL (just user/repo)
-      else if (/^[a-zA-Z0-9_-]+\/[a-zA-Z0-9_.-]+$/.test(rawUrl)) {
-        rawUrl = `https://raw.githubusercontent.com/${rawUrl}/main/README.md`;
+
+      // Handle base repo URLs: https://github.com/user/repo
+      let repoPath = '';
+      if (rawUrl.includes('github.com')) {
+        repoPath = rawUrl.split('github.com/')[1].split('?')[0].split('#')[0];
+        if (repoPath.endsWith('/')) repoPath = repoPath.slice(0, -1);
+      } else if (/^[a-zA-Z0-9_-]+\/[a-zA-Z0-9_.-]+$/.test(rawUrl)) {
+        repoPath = rawUrl;
       }
 
-      const res = await fetch(rawUrl, { headers: { 'Accept': 'text/plain' } });
-      if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-      const text = await res.text();
+      if (repoPath) {
+        const branches = ['main', 'master'];
+        const filenames = ['README.md', 'readme.md', 'README', 'readme'];
 
-      if (!text.trim()) throw new Error('File is empty');
+        let found = false;
+        for (const branch of branches) {
+          for (const file of filenames) {
+            const tryUrl = `https://raw.githubusercontent.com/${repoPath}/${branch}/${file}`;
+            try {
+              const res = await fetch(tryUrl);
+              if (res.ok) {
+                const text = await res.text();
+                if (text.trim()) {
+                  setMarkdown(text);
+                  setImportUrl('');
+                  setSnapMessage(lang === 'en' ? 'README imported successfully!' : 'تم استيراد الملف بنجاح!');
+                  setTimeout(() => setSnapMessage(null), 3000);
+                  found = true;
+                  break;
+                }
+              }
+            } catch (err) {
+              // Ignore and try next
+            }
+          }
+          if (found) break;
+        }
 
-      setMarkdown(text);
+        if (!found) {
+          throw new Error("Could not find a README file in this repository. Please provide the direct link to the file.");
+        }
+      } else {
+        const res = await fetch(rawUrl);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const text = await res.text();
+        setMarkdown(text);
+        setImportUrl('');
+        setSnapMessage(lang === 'en' ? 'README imported successfully!' : 'تم استيراد الملف بنجاح!');
+        setTimeout(() => setSnapMessage(null), 3000);
+      }
+
       setCurrentFilePath(null);
-      setImportUrl('');
-
-      setSnapMessage(lang === 'en' ? 'README imported successfully!' : 'تم استيراد الملف بنجاح!');
-      setTimeout(() => setSnapMessage(null), 3000);
     } catch (err: any) {
       console.error('Import error:', err);
-      alert(`❌ Import failed:\n${err.message}\n\nMake sure to use the raw GitHub URL.\nExample: https://raw.githubusercontent.com/user/repo/main/README.md`);
+      alert(`❌ Import failed: ${err.message}`);
       setIsImportOpen(true);
     }
   };
@@ -321,7 +389,7 @@ export default function App() {
         return;
       }
 
-      const name = `Snap ${new Date().toLocaleTimeString()}`;
+      const name = prompt(lang === 'en' ? 'Enter name for this snippet:' : 'أدخل اسماً لهذا المقتطف:') || `Snap ${new Date().toLocaleTimeString()}`;
       const newSnaps = [...snaps, { name, content: selectedText }];
       setSnaps(newSnaps);
       localStorage.setItem('readme-snaps', JSON.stringify(newSnaps));
@@ -466,11 +534,11 @@ export default function App() {
             if (!textarea) return;
             const sel = markdown.substring(textarea.selectionStart, textarea.selectionEnd);
             if (!sel.trim()) { alert('Select text first'); return; }
-            const name = prompt('Snap name:') || `Snap ${Date.now()}`;
+            const name = prompt(lang === 'en' ? 'Snap name:' : 'اسم المقتطف:') || `Snap ${Date.now()}`;
             const newSnaps = [...snaps, { name, content: sel }];
             setSnaps(newSnaps);
             localStorage.setItem('readme-snaps', JSON.stringify(newSnaps));
-            setSnapMessage(`✅ Snap saved: "${name}"`);
+            setSnapMessage(lang === 'en' ? `✅ Snap saved: "${name}"` : `✅ تم حفظ المقتطف: "${name}"`);
             setTimeout(() => setSnapMessage(null), 3000);
             setContextMenu(null);
           }} className="w-full text-left px-3 py-1.5 text-xs hover:bg-[var(--fg)] hover:text-[var(--bg)] flex items-center gap-2">
@@ -598,6 +666,29 @@ export default function App() {
 
           <div className="h-6 w-[1px] bg-[var(--border)] mx-1" />
 
+          <div className="h-6 w-[1px] bg-[var(--border)] mx-1" />
+
+          {/* AI Score Badge + Button */}
+          <button
+            onClick={() => setShowAI(!showAI)}
+            className={cn(
+              "flex items-center gap-2 px-3 py-1.5 text-xs font-bold rounded-sm border transition-all",
+              showAI
+                ? "bg-[var(--fg)] text-[var(--bg)] border-[var(--fg)]"
+                : "border-[var(--border)] hover:bg-[var(--fg)]/5"
+            )}
+          >
+            <BrainCircuit className="w-3.5 h-3.5" />
+            AI
+            <span className={cn(
+              "text-[9px] font-bold px-1.5 py-0.5 rounded-full",
+              aiScore >= 80 ? "bg-green-500 text-white" :
+                aiScore >= 50 ? "bg-amber-500 text-white" : "bg-red-500 text-white"
+            )}>
+              {aiScore}
+            </span>
+          </button>
+
           <button
             onClick={() => setIsWizardOpen(true)}
             className="flex items-center gap-2 px-3 py-1.5 bg-[var(--fg)] text-[var(--bg)] text-xs font-bold rounded-sm hover:opacity-90 transition-opacity"
@@ -616,7 +707,7 @@ export default function App() {
       </header>
 
       {/* Main Layout */}
-      <main className="flex h-[calc(100vh-3.5rem)] overflow-hidden">
+      <main className="flex h-[calc(100vh-3.5rem-1.5rem)] overflow-hidden">
         {/* Sidebar Tools */}
         <aside className="w-12 border-r border-[var(--border)] flex flex-col items-center py-4 gap-6 bg-[var(--bg)]">
           <button
@@ -912,6 +1003,32 @@ export default function App() {
             </div>
           )}
         </div>
+
+        {/* AI Panel */}
+        <AnimatePresence>
+          {showAI && (
+            <motion.div
+              initial={{ x: 320, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: 320, opacity: 0 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="w-80 border-l border-[var(--border)] flex-shrink-0 overflow-hidden"
+            >
+              <AIPanel
+                markdown={markdown}
+                selectedText={getSelectedText()}
+                onInsert={(text) => insertAtCursor(text)}
+                onReplace={(text) => setMarkdown(text)}
+                onClose={() => setShowAI(false)}
+                config={aiConfig}
+                onConfigChange={(c) => {
+                  setAiConfig(c);
+                  localStorage.setItem('readme-ai-config', JSON.stringify(c));
+                }}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
 
       {/* Import Modal */}

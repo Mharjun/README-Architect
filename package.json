@@ -3,6 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "author": "yasser27",
+  "description": "AI-powered README Architect",
   "type": "module",
   "main": "electron-main.cjs",
   "scripts": {
@@ -29,7 +30,7 @@
     ],
     "win": {
       "target": "nsis",
-      "icon": "assets/icon.ico",
+      "icon": "assets/app-icon.png",
       "fileAssociations": [
         {
           "ext": "md",

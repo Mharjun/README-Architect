@@ -1,16 +1,16 @@
 import { Type } from "@google/genai";
 
 export const SNIPPET_GROUPS = [
-  { id: "formatting", label: "📝 Formatting" },
-  { id: "code", label: "💻 Code Blocks" },
-  { id: "alerts", label: "⚠️ Alerts" },
-  { id: "tables", label: "📊 Tables" },
-  { id: "lists", label: "📋 Lists" },
-  { id: "badges", label: "🏷️ Badges" },
-  { id: "github", label: "🐙 GitHub Stats" },
-  { id: "sections", label: "📁 Sections" },
-  { id: "media", label: "🖼️ Media" },
-  { id: "advanced", label: "⚙️ Advanced" },
+  { id: "formatting", label: " Formatting" },
+  { id: "code", label: " Code Blocks" },
+  { id: "alerts", label: " Alerts" },
+  { id: "tables", label: " Tables" },
+  { id: "lists", label: " Lists" },
+  { id: "badges", label: " Badges" },
+  { id: "github", label: " GitHub Stats" },
+  { id: "sections", label: " Sections" },
+  { id: "media", label: " Media" },
+  { id: "advanced", label: " Advanced" },
 ];
 
 export interface Template {
@@ -82,7 +82,7 @@ const generateTemplates = (): Template[] => {
       id: `tpl-${i}`,
       name: `${tech} Professional Template`,
       category: cat,
-      content: `# 🚀 ${tech} {name}\n\n[![License](https://img.shields.io/badge/license-MIT-blue.svg)](#) \n[![Version](https://img.shields.io/badge/version-1.0.0-green.svg)](#)\n\nA high-performance ${tech} project designed for scalability and maintainability.\n\n## ✨ Features\n- ⚡ **Fast Performance:** Optimized for speed.\n- 🛡️ **Secure:** Built with security best practices.\n- 🧩 **Modular:** Easy to extend and customize.\n- 📱 **Responsive:** Works seamlessly across devices.\n\n## 🛠 Tech Stack\n- **Core:** ${tech}\n- **Language:** TypeScript / Python / Go\n- **Styling:** Tailwind CSS / CSS Modules\n- **Database:** PostgreSQL / MongoDB\n\n## 🚀 Getting Started\n\n### Prerequisites\n- Node.js / Python / Go installed\n- Package manager (npm/yarn/pip)\n\n### Installation\n\`\`\`bash\n# Clone the repository\ngit clone https://github.com/user/{slug}.git\n\n# Navigate to project directory\ncd {slug}\n\n# Install dependencies\nnpm install # or pip install -r requirements.txt\n\`\`\`\n\n### Running the App\n\`\`\`bash\nnpm run dev # or python main.py\n\`\`\`\n\n## 📸 Screenshots\n| Desktop | Mobile |\n|---------|--------|\n| ![Desktop](https://picsum.photos/seed/${tech.toLowerCase()}/800/600) | ![Mobile](https://picsum.photos/seed/${tech.toLowerCase()}-mob/300/600) |\n\n## 🤝 Contributing\nContributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md).\n\n## 📋 License\nMIT © [Author](https://github.com/author)`
+      content: `# ${tech} {name}\n\n[![License](https://img.shields.io/badge/license-MIT-blue.svg)](#) \n[![Version](https://img.shields.io/badge/version-1.0.0-green.svg)](#)\n\nA high-performance ${tech} project designed for scalability and maintainability.\n\n## ✨ Features\n- ⚡ **Fast Performance:** Optimized for speed.\n- 🛡️ **Secure:** Built with security best practices.\n- 🧩 **Modular:** Easy to extend and customize.\n- 📱 **Responsive:** Works seamlessly across devices.\n\n## 🛠 Tech Stack\n- **Core:** ${tech}\n- **Language:** TypeScript / Python / Go\n- **Styling:** Tailwind CSS / CSS Modules\n- **Database:** PostgreSQL / MongoDB\n\n## 🚀 Getting Started\n\n### Prerequisites\n- Node.js / Python / Go installed\n- Package manager (npm/yarn/pip)\n\n### Installation\n\`\`\`bash\n# Clone the repository\ngit clone https://github.com/user/{slug}.git\n\n# Navigate to project directory\ncd {slug}\n\n# Install dependencies\nnpm install # or pip install -r requirements.txt\n\`\`\`\n\n### Running the App\n\`\`\`bash\nnpm run dev # or python main.py\n\`\`\`\n\n## 📸 Screenshots\n| Desktop | Mobile |\n|---------|--------|\n| ![Desktop](https://picsum.photos/seed/${tech.toLowerCase()}/800/600) | ![Mobile](https://picsum.photos/seed/${tech.toLowerCase()}-mob/300/600) |\n\n## 🤝 Contributing\nContributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md).\n\n## 📋 License\nMIT © [Author](https://github.com/author)`
     });
   });
 
@@ -161,7 +161,7 @@ const generateSnippets = (): Snippet[] => {
   ];
   // Add 10 more variations
   for (let i = 1; i <= 10; i++) {
-    tables.push({ n: `List Variation ${i}`, c: `- Option ${i}\n- Choice ${i}\n`, category: "lists" });
+    tables.push({ n: `List Variation ${i}`, c: `- Option ${i}\n- Choice ${i}\n`, category: "Lists" });
   }
   tables.forEach(t => snippets.push({ name: t.n, content: t.c, category: (t.category || "Tables").toLowerCase() }));
 
@@ -172,7 +172,7 @@ const generateSnippets = (): Snippet[] => {
     snippets.push({
       name: `Badge: License (${style})`,
       content: `![License](https://img.shields.io/badge/license-MIT-blue?style=${style})\n`,
-      category: "badges"
+      category: "Badges"
     });
     snippets.push({
       name: `Badge: Version (${style})`,
@@ -186,7 +186,7 @@ const generateSnippets = (): Snippet[] => {
     snippets.push({
       name: `Tech Badge: ${tech}`,
       content: `![${tech}](https://img.shields.io/badge/${tech}-%2320232a.svg?style=flat&logo=${tech.toLowerCase()}&logoColor=white)\n`,
-      category: "badges"
+      category: "Badges"
     });
   });
   // Add more to reach 40
@@ -238,7 +238,7 @@ const generateSnippets = (): Snippet[] => {
     "🛠️", "📖", "🤝", "📋", "📸", "⚡", "🚀", "📖", "🤝", "📋"
   ];
   emojis.forEach((e, i) => {
-    snippets.push({ name: `Emoji: ${e}`, content: e, category: "emojis" });
+    snippets.push({ name: `Emoji: ${e}`, content: e, category: "Emojis" });
   });
 
   return snippets;

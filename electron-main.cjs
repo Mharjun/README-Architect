@@ -41,13 +41,19 @@ const handleFileOpen = (argv) => {
   if (!mainWindow) return;
   const filePath = argv.find(arg => arg.endsWith('.md') || arg.endsWith('.txt'));
   if (filePath && fs.existsSync(filePath)) {
+    const absolutePath = path.resolve(filePath);
+    console.log('Opening file:', absolutePath);
     const sendFile = () => {
-      const content = fs.readFileSync(filePath, 'utf-8');
-      mainWindow.webContents.send('open-file', {
-        content,
-        path: filePath,
-        name: path.basename(filePath)
-      });
+      try {
+        const content = fs.readFileSync(absolutePath, 'utf-8');
+        mainWindow.webContents.send('open-file', {
+          content,
+          path: absolutePath,
+          name: path.basename(absolutePath)
+        });
+      } catch (err) {
+        console.error('Error reading file:', err);
+      }
     };
 
     if (mainWindow.webContents.isLoading()) {
